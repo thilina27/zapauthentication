@@ -1076,7 +1076,7 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 		//setup context
 		contextId=setUpContext(url,zapClientAPI);
 
-		listener.getLogger().println("URL "+contextURL+" added to Context ["+contextId+"]");
+		listener.getLogger().println("URL "+url+" added to Context ["+contextId+"]");
 
 		//set up authentication method
 		setUpAuthenticationMethod(listener,zapClientAPI,loggedInIndicator,usernameParameter,

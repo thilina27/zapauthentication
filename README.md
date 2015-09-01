@@ -12,3 +12,4 @@ For more informations, visit https://wiki.jenkins-ci.org/display/JENKINS/ZAProxy
 # zapauthentication
 Jenkins zaproxy plugin , modify for use authentication
 
+Recomend use <a href= 'https://github.com/zaproxy/zaproxy/wiki/Downloads#zap-weekly'>ZAP weekly release</a>

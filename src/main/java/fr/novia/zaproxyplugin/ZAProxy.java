@@ -966,7 +966,6 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 				String contextId, String loginUrl) 
 				throws ClientApiException, UnsupportedEncodingException{
 
-		String loggedInIndicatorReg="\\Q"+loggedInIndicator+"\\E";
 		String loginRequestData = usernameParameter+"={%username%}&"+passwordParameter+"={%password%}";
 
 		// set authentication method 		
@@ -983,7 +982,7 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 		listener.getLogger().println("Form Based Authentication added to context");
 
 		//add logged in idicator
-		zapClientAPI.authentication.setLoggedInIndicator(API_KEY, contextId, loggedInIndicatorReg);
+		zapClientAPI.authentication.setLoggedInIndicator(API_KEY, contextId, loggedInIndicator);
 		listener.getLogger().println("Logged in indicator "+loggedInIndicatorReg+" added to context ");
 
 	}

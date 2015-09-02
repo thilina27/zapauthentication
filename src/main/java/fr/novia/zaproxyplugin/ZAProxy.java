@@ -983,7 +983,7 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 
 		//add logged in idicator
 		zapClientAPI.authentication.setLoggedInIndicator(API_KEY, contextId, loggedInIndicator);
-		listener.getLogger().println("Logged in indicator "+loggedInIndicatorReg+" added to context ");
+		listener.getLogger().println("Logged in indicator "+loggedInIndicator+" added to context ");
 
 	}
 

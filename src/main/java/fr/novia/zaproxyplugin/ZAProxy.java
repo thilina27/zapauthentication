@@ -260,6 +260,8 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 		s += "username ["+username+"]\n";
 		s += "passwordParameter ["+passwordParameter+"]\n";
 		s += "password ["+password+"]\n";
+		s += "loginUrl ["+loginUrl+"]\n";
+		s += "loggedInIndicator ["+loggedInIndicator+"]\n";
 		s += "ajaxSpiderURL ["+ajaxSpiderURL+"]\n";
 		s += "scanURL ["+scanURL+"]\n";
 		s += "saveReports ["+saveReports+"]\n";
@@ -383,6 +385,14 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 
 	public String  getpassword() {
 		return password;
+	}
+
+	public String getLoginUrl() {
+		return loginUrl;
+	}
+
+	public String getLoggedInIndicator() {
+		return loggedInIndicator;
 	}
 	/**
 	 * Gets the JDK that this Sonar builder is configured with, or null.

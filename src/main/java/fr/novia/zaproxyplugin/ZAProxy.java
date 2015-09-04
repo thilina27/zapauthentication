@@ -65,10 +65,13 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import jenkins.model.Jenkins;
 
@@ -755,10 +758,26 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 	 */
 	private void saveReport(ZAPreport reportFormat, BuildListener listener, FilePath workspace, 
 			ClientApi clientApi) throws IOException, ClientApiException {
-		final String fullFileName = filenameReports + "." + reportFormat.getFormat();
+
+		String timeStamp=getTimeStamp();
+
+		final String fullFileName = filenameReports +timeStamp+ "." + reportFormat.getFormat();
 		File reportsFile = new File(workspace.getRemote(), fullFileName);
 		FileUtils.writeByteArrayToFile(reportsFile, reportFormat.generateReport(clientApi, API_KEY));
 		listener.getLogger().println("File ["+ reportsFile.getAbsolutePath() +"] saved");
+	}
+
+	/**
+	 * Generate and return date and time.
+	 * @return time adn date in dd-MM-yy HH:mm:ss format.
+	 */
+
+
+	private String getTimeStamp(){
+
+		DateFormat df = new SimpleDateFormat("dd-MM-yy HH:mm:ss");
+       		Date dateobj = new Date();
+       		return df.format(dateobj);
 	}
 
 	/**

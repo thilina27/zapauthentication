@@ -160,8 +160,10 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 	/** Password for the defined user */
 	private final String password;
 	
-	/** username and password post data parameter*/
+	/** username post data parameter*/
 	private final String usernameParameter;
+	
+	/** password post data parameter*/
 	private final String passwordParameter;
 
 	/** loggin url**/
@@ -169,6 +171,12 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 
 	/** logged in indiacation*/
 	private final String loggedInIndicator;
+
+	/** Id of the newly created context*/
+	private String contextId;
+
+	/** Id of the newly created user*/
+	private String userId;
 
 	/** Realize a url AjaxSpider or not by ZAProxy */
 	private final boolean ajaxSpiderURL;
@@ -816,9 +824,12 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 			 * ======================================================= 
 			 */
 			if (spiderAsUser) {
-				listener.getLogger().println("Spider the site [" + targetURL + "] as user ["+username+"]");
-				spiderURLAsUser(targetURL, listener, zapClientAPI, username, password, usernameParameter, passwordParameter, 
-					loginUrl, loggedInIndicator);
+				listener.getLogger().println("Setting up Authentication");
+				setUpAuthentication(targetURL,listener,zapClientAPI, 
+					username,password,usernameParameter,passwordParameter,loginUrl,loggedInIndicator);
+
+				listener.getLogger().println("Spider the site [" + targetURL + "] as user ["+username+"]");				
+				spiderURLAsUser(targetURL, listener, zapClientAPI, contextId, userId);
 			} else {
 				listener.getLogger().println("Skip spidering the site [" + targetURL + "] as user ["+username+"]");
 			}
@@ -927,26 +938,31 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 
 	/**
 	 * set up a context and add url to it
+	 * @param listener the listener to display log during the job execution in jenkins
 	 * @param URL the URL to be added to context
 	 * @param zapClientAPI the client API to use ZAP API methods
 	 * @return the context ID of the context
 	 * @throws ClientApiException
 	 */
-	private String setUpContext(final String url, ClientApi zapClientAPI) throws ClientApiException {
+	private String setUpContext(BuildListener listener,final String url, ClientApi zapClientAPI) 
+				throws ClientApiException {
 
 		String contextName="context1";//name of the Context to be create
 		String contextURL="\\Q"+url+"\\E.*";//url to added to context same url user give to scan
-		String contextId;
+		String contextIdTemp;
+
 		//Create new context
 		//method signature : newContext(String apikey,String contextname) throws ClientApiException
-		contextId=extractontextId(zapClientAPI.context.newContext(API_KEY,contextName));
+		contextIdTemp=extractontextId(zapClientAPI.context.newContext(API_KEY,contextName));
 
 		//add url to the context
 		//method signature : includeInContext(String apikey, String contextname, String regex) 
 		//					 throws ClientApiException
 		zapClientAPI.context.includeInContext(API_KEY,contextName,contextURL);
 
-		return contextId;
+		listener.getLogger().println("URL "+url+" added to Context ["+contextIdTemp+"]");
+		
+		return contextIdTemp;
 	}
 
 	/**
@@ -1002,11 +1018,11 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 						String password, String contextId) 
 						throws ClientApiException, UnsupportedEncodingException {
 
-		String userId;
+		String userIdTemp;
 		// add new user and authentication details
 		// Make sure we have at least one user
 		// extract user id 
-		userId = extractUserId(zapClientAPI.users.newUser(API_KEY, contextId, "admin"));
+		userIdTemp = extractUserId(zapClientAPI.users.newUser(API_KEY, contextId, "admin"));
 
 		// Prepare the configuration in a format similar to how URL parameters are formed. This
 		// means that any value we add for the configuration values has to be URL encoded.
@@ -1015,14 +1031,30 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 		userAuthConfig.append("&password=").append(URLEncoder.encode(password, "UTF-8"));
 		String authCon=userAuthConfig.toString();
 		
-		zapClientAPI.users.setAuthenticationCredentials(API_KEY, contextId, userId, authCon);
+		zapClientAPI.users.setAuthenticationCredentials(API_KEY, contextId, userIdTemp, authCon);
 
 		listener.getLogger().println("New user added. username :" +username+ "password :" +password);
 		
-		zapClientAPI.users.setUserEnabled(API_KEY, contextId,userId,"true");
+		zapClientAPI.users.setUserEnabled(API_KEY, contextId,userIdTemp,"true");
 		listener.getLogger().println("User : "+username+" is now Enabled");
 
-		return userId;
+		return userIdTemp;
+	}
+
+	private void setUpAuthentication(final String url, BuildListener listener, ClientApi zapClientAPI, 
+				String username, String password, String usernameParameter, 
+				String passwordParameter, String loginUrl, String loggedInIndicator)
+				throws ClientApiException, UnsupportedEncodingException {
+
+		//setup context
+		this.contextId=setUpContext(listener,url,zapClientAPI);
+				
+		//set up authentication method
+		setUpAuthenticationMethod(listener,zapClientAPI,loggedInIndicator,usernameParameter,
+									passwordParameter,contextId,loginUrl);
+
+		//set up user
+		this.userId=setUpUser(listener,zapClientAPI,username,password,contextId);
 	}
 	
 	/**
@@ -1065,25 +1097,10 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 	 */
 	 
 	private void spiderURLAsUser(final String url, BuildListener listener, ClientApi zapClientAPI, 
-				String username, String password, String usernameParameter, 
-				String passwordParameter, String loginUrl, String loggedInIndicator)
-				throws ClientApiException, InterruptedException, UnsupportedEncodingException {
-
-		String contextId;
-		String userId;
+				String contextId, String userId)
+				throws ClientApiException, InterruptedException {
 		
-		//setup context
-		contextId=setUpContext(url,zapClientAPI);
-
-		listener.getLogger().println("URL "+url+" added to Context ["+contextId+"]");
-
-		//set up authentication method
-		setUpAuthenticationMethod(listener,zapClientAPI,loggedInIndicator,usernameParameter,
-									passwordParameter,contextId,loginUrl);
-
-		//set up user
-		userId=setUpUser(listener,zapClientAPI,username,password,contextId);
-
+		
 		// Start spider as user
 		zapClientAPI.spider.scanAsUser(API_KEY, url, contextId, userId, "0");
 		

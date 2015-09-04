@@ -1040,7 +1040,19 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 
 		return userIdTemp;
 	}
-
+	
+	/**
+	 * Set up all authentication details
+	 * @param username user name to be used in authentication
+	 * @param password password for the authentication user
+	 * @param usernameParameter parameter define in passing username
+	 * @param passwordParameter parameter that define in passing password for the user
+	 * @param loginUrl login page url
+	 * @param loggedInIdicator indication for know its logged in
+	 * @throws ClientApiException
+	 * @throws InterruptedException 
+	 * @throws UnsupportedEncodingException
+	 */
 	private void setUpAuthentication(final String url, BuildListener listener, ClientApi zapClientAPI, 
 				String username, String password, String usernameParameter, 
 				String passwordParameter, String loginUrl, String loggedInIndicator)
@@ -1085,15 +1097,8 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 	 * @param url the url to investigate
 	 * @param listener the listener to display log during the job execution in jenkins
 	 * @param zapClientAPI the client API to use ZAP API methods
-	 * @param username user name to be used in authentication
-	 * @param password password for the authentication user
-	 * @param usernameParameter parameter define in passing username
-	 * @param passwordParameter parameter that define in passing password for the user
-	 * @param loginUrl login page url
-	 * @param loggedInIdicator indication for know its logged in
 	 * @throws ClientApiException
-	 * @throws InterruptedException 
-	 * @throws UnsupportedEncodingException
+	 * @throws InterruptedException
 	 */
 	 
 	private void spiderURLAsUser(final String url, BuildListener listener, ClientApi zapClientAPI, 

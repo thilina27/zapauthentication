@@ -215,6 +215,48 @@ public class ZAProxy extends AbstractDescribableImpl<ZAProxy> implements Seriali
 	/** The jdk to use to start ZAProxy */
 	private final String jdk;
 
+	/**
+     * @deprecated
+     * Old constructor 
+     */
+	@Deprecated
+	public ZAProxy(boolean autoInstall, String toolUsed, String zapHome, int timeoutInSec,
+			String filenameLoadSession, String targetURL, boolean spiderURL, boolean scanURL,
+			boolean saveReports, List<String> chosenFormats, String filenameReports,
+			boolean saveSession, String filenameSaveSession,
+			String zapDefaultDir, String chosenPolicy,
+			List<ZAPcmdLine> cmdLinesZAP, String jdk) {
+		
+		this.autoInstall = autoInstall;
+		this.toolUsed = toolUsed;
+		this.zapHome = zapHome;
+		this.timeoutInSec = timeoutInSec;
+		this.filenameLoadSession = filenameLoadSession;
+		this.targetURL = targetURL;
+		this.spiderURL = spiderURL;
+		this.scanURL = scanURL;
+		this.saveReports = saveReports;
+		this.chosenFormats = chosenFormats != null ? new ArrayList<String>(chosenFormats) : new ArrayList<String>();
+		this.filenameReports = filenameReports;
+		this.saveSession = saveSession;
+		this.filenameSaveSession = filenameSaveSession;
+		this.zapDefaultDir = zapDefaultDir;
+		this.chosenPolicy = chosenPolicy;
+		this.cmdLinesZAP = cmdLinesZAP != null ? new ArrayList<ZAPcmdLine>(cmdLinesZAP) : new ArrayList<ZAPcmdLine>();
+		this.ajaxSpiderURL=false;
+		this.jdk = jdk;
+		
+		this.spiderAsUser=false;
+		this.username="";
+		this.password="";
+		this.usernameParameter="";
+		this.passwordParameter="";
+		this.loginUrl="";
+		this.loggedInIndicator="";
+
+		System.out.println(this.toString());
+	}
+
 	@DataBoundConstructor
 	public ZAProxy(boolean autoInstall, String toolUsed, String zapHome, int timeoutInSec,
 			String filenameLoadSession, String targetURL, boolean spiderURL, boolean spiderAsUser, boolean ajaxSpiderURL, 
